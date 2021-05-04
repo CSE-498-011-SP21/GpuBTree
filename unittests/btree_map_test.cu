@@ -868,6 +868,7 @@ TEST(BTreeMap, ConcurrentOpsInsertNewQueryPast) {
       cur_result_index++;
       key_iter++;
     }
+    // TODO: This part of the test causes problems
     // if (cur_result_index != averageLength * 2) {
     //   EXPECT_EQ(result_ptr[cur_result_index],
     //             0xffffffff);  // at the end there should be nothing
