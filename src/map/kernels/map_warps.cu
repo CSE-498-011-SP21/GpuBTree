@@ -320,7 +320,9 @@ __device__ void insertion_unit(bool& to_be_inserted,
                                KeyT& myKey,
                                ValueT& myValue,
                                uint32_t*& d_root,
-                               AllocatorT* memAlloc) {
+                               AllocatorT* memAlloc,
+                               ValueT* ret_val 
+                              ) {
   uint32_t work_queue;
   uint32_t last_work_queue = 0;
   uint32_t rootAddress = *d_root;
@@ -488,8 +490,11 @@ __device__ void insertion_unit(bool& to_be_inserted,
       uint32_t src_value = __shfl_sync(WARP_MASK, myValue, src_lane1, 32);
       bool key_exist =
           __ballot_sync(WARP_MASK, src_key == src_unit_data) & KEY_PIVOT_MASK;
-      if (!key_exist)
+      if (!key_exist) {
         insert_into_node(false, next, src_key, src_value, memAlloc, src_unit_data);
+      } else {
+        ret_val = src_unit_data;
+      }
       release_lock(memAlloc->getAddressPtr(next));
       if (src_lane1 == lane_id())
         to_be_inserted = false;

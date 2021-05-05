@@ -52,7 +52,9 @@ class GpuBTreeMap {
                          KeyT*& d_keys,
                          ValueT*& d_values,
                          SizeT& count,
-                         cudaStream_t stream_id = 0);
+                         cudaStream_t stream_id = 0,
+                         ValueT*& d_ret_vals  
+                        );
   cudaError_t searchKeys(uint32_t*& root,
                          KeyT*& d_queries,
                          ValueT*& d_results,
@@ -111,7 +113,9 @@ class GpuBTreeMap {
   cudaError_t insertKeys(KeyT* keys,
                          ValueT* values,
                          SizeT count,
-                         SourceT source = SourceT::DEVICE) {
+                         SourceT source = SourceT::DEVICE,
+                         ValueT* ret_vals
+                        ) {
     KeyT* d_keys;
     ValueT* d_values;
     if (source == SourceT::HOST) {
@@ -124,7 +128,7 @@ class GpuBTreeMap {
       d_values = values;
     }
 
-    CHECK_ERROR(insertKeys(_d_root, d_keys, d_values, count));
+    CHECK_ERROR(insertKeys(_d_root, d_keys, d_values, count, ret_vals));
 
     if (source == SourceT::HOST) {
       CHECK_ERROR(memoryUtil::deviceFree(d_keys));

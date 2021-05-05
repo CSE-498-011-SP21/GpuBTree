@@ -34,13 +34,16 @@ __global__ void insert_keys(uint32_t* d_root,
                             KeyT* d_keys,
                             ValueT* d_values,
                             SizeT num_keys,
-                            AllocatorT allocator) {
+                            AllocatorT allocator,
+                            ValueT* d_ret_vals  
+                          ) {
   uint32_t tid = threadIdx.x + blockIdx.x * blockDim.x;
   uint32_t laneId = threadIdx.x & 0x1F;
 
   KeyT myKey;
   ValueT myValue;
   bool to_insert = false;
+  ValueT retVal;
 
   if ((tid - laneId) >= num_keys)
     return;
@@ -48,10 +51,13 @@ __global__ void insert_keys(uint32_t* d_root,
   if (tid < num_keys) {
     myKey = d_keys[tid] + 2;
     myValue = d_values[tid] + 2;
+    retVal = d_ret_vals[tid] + 2;
     to_insert = true;
   }
-
-  warps::insertion_unit(to_insert, myKey, myValue, d_root, &allocator);
+  
+  
+  warps::insertion_unit(to_insert, myKey, myValue, d_root, &allocator, retVal);
+  
 }
 
 template<typename AllocatorT>

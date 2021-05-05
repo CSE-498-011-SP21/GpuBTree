@@ -42,7 +42,9 @@ cudaError_t GpuBTreeMap<KeyT, ValueT, SizeT, AllocatorT>::insertKeys(
     KeyT*& d_keys,
     ValueT*& d_values,
     SizeT& count,
-    cudaStream_t stream_id) {
+    cudaStream_t stream_id,
+    ValueT*& d_ret_vals  
+  ) {
   const uint32_t num_blocks = (count + BLOCKSIZE_BUILD_ - 1) / BLOCKSIZE_BUILD_;
   const uint32_t shared_bytes = 0;
   kernels::insert_keys<<<num_blocks, BLOCKSIZE_BUILD_, shared_bytes, stream_id>>>(
