@@ -592,7 +592,7 @@ __device__ void delete_unit_bulk(uint32_t& laneId,
                                  AllocatorT* memAlloc) {
   int dest_lane_pivot;
   uint32_t rootAddress = *d_root;
-
+  
 #pragma unroll
   for (int src_lane = 0; src_lane < WARP_WIDTH; src_lane++) {
     KeyT src_key = __shfl_sync(WARP_MASK, myKey, src_lane, 32);
